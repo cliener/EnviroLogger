@@ -11,7 +11,9 @@ sense = SenseHat()
 timestamp = datetime.now()
 # delay in seconds
 delay_display = 15
-delay_log = 60
+# Display delay x log count multiplier
+# Logs once every delay_log runs of display
+delay_log = 4
 
 # Compile sense data
 def get_sense_data():
@@ -74,6 +76,7 @@ def show_sense_data():
 
 # Record and show stats
 with open('data.csv', 'w', buffering=1, newline='') as f:
+    display_count = 0
     # Init CSV header
     data_writer = writer(f)
     data_writer.writerow(['temp', 'pres', 'hum',
@@ -87,34 +90,22 @@ with open('data.csv', 'w', buffering=1, newline='') as f:
         data = get_sense_data()
         time_difference = data[-1] - timestamp
         seconds = time_difference.seconds
-        # Every delay seconds
- #       if time_difference.seconds > delay_display:
-            # Write to CSV
-#            data_writer.writerow(data)
+
         # Every delay seconds
         if seconds % delay_display == 1:
-        # if seconds - delay_display == 1:
-        # if time_difference.seconds > delay_display:
-            print(seconds)
-            print(seconds / delay_display)
-            print((seconds - 1) % delay_display == 0)
-            print(seconds - delay_display == 1)
+            # Update count
+            display_count = display_count + 1
+
+            if (display_count == delay_log):
+                print("Log")
+                # Write to CSV
+                data_writer.writerow(data)
+                display_count = 0
+
+            print("Print")
             # Update display
             show_sense_data()
+
+            # Reset timer
             if seconds - delay_display == 1:
                 timestamp = datetime.now()
-
-
-    
-def outski():
-    print("quitting")
-    sys.exit()
-
-sense.stick.direction_up = humidity
-sense.stick.direction_down = outski
-sense.stick.direction_left = pressure
-sense.stick.direction_right = temp
-
-while True:
-    pass    
-
