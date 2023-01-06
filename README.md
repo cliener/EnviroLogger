@@ -4,8 +4,8 @@ Raspberry Pi Sense HAT Environment Logger
 
 ## Hardware
 
-Raspberry Pi 4
-[Sense HAT](https://www.raspberrypi.com/products/sense-hat/)
+- Raspberry Pi 4
+- [Sense HAT](https://www.raspberrypi.com/products/sense-hat/)
 
 ## What's it do?
 
