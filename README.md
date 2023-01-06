@@ -15,7 +15,7 @@ Raspberry Pi Sense HAT Environment Logger
     - Clean up log files after size or number of days
 - Display data every y seconds on Sense HAT screen
 - Run the app as a cron job
-- Report data to HomeKit
+- Report data to HomeKit via a [Homebridge plugin](https://github.com/cliener/EnviroBridge)
 
 ## Other things
 
