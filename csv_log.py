@@ -10,7 +10,6 @@ LOG_HEADER = ['date', 'value_1', 'value_2'] # Pass None for no csv header
 LOG_FORMAT = '%(asctime)s,%(message)s' # Log record format can use: asctime, levelname
 LOG_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 
-
 class CsvFormatter(logging.Formatter):
 
     def format_msg(self, msg):
@@ -53,22 +52,3 @@ class RotatingCsvLogger(logging.Logger):
         logging.Logger.__init__(self, filename.rsplit('.', 1)[0], level)
         handler = CsvRotatingFileHandler(fmt, datefmt, filename, max_size, max_files, header)
         self.addHandler(handler)
-
-
-# def main():
-#     # Create logger with csv rotating handler
-#     logger = RotatingCsvLogger(logging.INFO, LOG_FORMAT, LOG_DATE_FORMAT,
-#         LOG_FILE_NAME, LOG_MAX_SIZE, LOG_MAX_FILES, LOG_HEADER)
-
-#     # Log some records
-#     for i in range(10):
-#         logger.info([i, i * 2])
-
-#     # You can log list or string
-#     logger.info([1000, 1000])
-#     logger.info('2000,2000')
-
-#     # Note that "LOG_HEADER" will only appear in the rotated files (that ends with _1 _2..) 
-
-# if __name__ == '__main__':
-#     main()

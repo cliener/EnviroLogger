@@ -1,14 +1,8 @@
 from sense_hat import SenseHat
 from datetime import datetime
-# from csv import writer
-import csv
 import csv_log
 import logging
 from logging.handlers import RotatingFileHandler
-# import logging
-# import io
-# import sys
-# from random import randint
 
 sense = SenseHat()
 #sense.color.gain = 60
@@ -80,20 +74,11 @@ def show_sense_data(data):
 # CSV Logger
 # Create logger with csv rotating handler
 LOG_HEADER = ['temp', 'pres', 'hum', 'datetime'] # Pass None for no csv header
+
+# Record and show stats
 logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG_DATE_FORMAT,
         csv_log.LOG_FILE_NAME, csv_log.LOG_MAX_SIZE, csv_log.LOG_MAX_FILES, LOG_HEADER)
 
-# Record and show stats
-# with open('data.csv', 'w', buffering=1, newline='') as csvFile:
-    # display_count = 0
-    # Init CSV header
-    # data_writer = csv.DictWriter(csvFile, ['temp', 'pres', 'hum',
-                        #    'yaw', 'pitch', 'roll',
-                        #    'mag_x', 'mag_y', 'mag_z',
-                        #    'acc_x', 'acc_y', 'acc_z',
-                        #    'gyro_x', 'gyro_y', 'gyro_z',
-                        #    'datetime'])
-    # data_writer.writeheader()
 display_count = 0
 while True:
     data = get_sense_data()
