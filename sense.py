@@ -49,7 +49,8 @@ def get_sense_data():
     # sense_data["gyro_y"] = gyro["y"]
     # sense_data["gyro_z"] = gyro["z"]
     
-    sense_data["datetime"] = datetime.now()
+    # sense_data["datetime"] = datetime.now()
+    sense_data["datetime"] = datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
 
     return sense_data
 
@@ -82,7 +83,8 @@ logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG
 display_count = 0
 while True:
     data = get_sense_data()
-    time_difference = data["datetime"] - timestamp
+    now = datetime.now();
+    time_difference = now - timestamp
     seconds = time_difference.seconds
 
     # Every delay seconds

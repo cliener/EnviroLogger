@@ -7,8 +7,8 @@ LOG_FILE_NAME = 'log.csv'
 LOG_MAX_SIZE = 4096 # Max size of each log file in bytes
 LOG_MAX_FILES = 4 # Max of files count
 LOG_HEADER = ['date', 'value_1', 'value_2'] # Pass None for no csv header
-LOG_FORMAT = '%(asctime)s,%(message)s' # Log record format can use: asctime, levelname
-LOG_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
+LOG_FORMAT = '%(message)s' # Log record format can use: asctime, levelname
+LOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 class CsvFormatter(logging.Formatter):
 
