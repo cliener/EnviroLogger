@@ -83,9 +83,14 @@ logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG
 display_count = 0
 while True:
     data = get_sense_data()
-    now = datetime.now();
+    show_data = False
+    now = datetime.now()
     time_difference = now - timestamp
     seconds = time_difference.seconds
+
+    # Trigger display when the joystick is pressed
+    for event in sense.stick.get_events():
+        show_data = True
 
     # Every delay seconds
     if seconds % delay_display == 1:
@@ -97,8 +102,10 @@ while True:
             logger.info(data)
             display_count = 0
 
-        # Update display
-        show_sense_data(data)
+        # Update display when triggered
+        if show_data:
+           show_sense_data(data)
+           show_data = False
 
         # Reset timer
         if seconds - delay_display == 1:
