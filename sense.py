@@ -1,19 +1,17 @@
 from sense_hat import SenseHat
 from datetime import datetime
-import csv_log
-import logging
-from logging.handlers import RotatingFileHandler
+import csv_log, logging, time
 
 sense = SenseHat()
+sense.set_rotation(180)
 #sense.color.gain = 60
 #sense.color.integration_cycles = 64
 
-timestamp = datetime.now()
 # delay in seconds
-delay_display = 15
+delay_display = 10
 # Display delay x log count multiplier
 # Logs once every delay_log runs of display
-delay_log = 4
+delay_log = 6
 
 # Compile sense data
 def get_sense_data():
@@ -81,32 +79,42 @@ logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG
         csv_log.LOG_FILE_NAME, csv_log.LOG_MAX_SIZE, csv_log.LOG_MAX_FILES, LOG_HEADER)
 
 display_count = 0
+show_data = False
+
+timestamp = time.perf_counter()
+
 while True:
-    data = get_sense_data()
-    show_data = False
-    now = datetime.now()
+    now = time.perf_counter()
     time_difference = now - timestamp
-    seconds = time_difference.seconds
+    seconds = int(time_difference)
+
+    # Capture joystick event
+    event = sense.stick.wait_for_event(emptybuffer = True)
 
     # Trigger display when the joystick is pressed
-    for event in sense.stick.get_events():
+    if event.action == "pressed":
+        print("Pressed")
         show_data = True
 
     # Every delay seconds
-    if seconds % delay_display == 1:
+    if seconds % delay_display == 0:
+        data = get_sense_data()
         # Update count
         display_count = display_count + 1
+        time.sleep(1)
 
+        # Log data
         if (display_count == delay_log):
+            print("Logging")
+            # Reset count
+            display_count = 0
             # Write to CSV
             logger.info(data)
-            display_count = 0
+            # Reset timer
+            timestamp = time.perf_counter()
 
         # Update display when triggered
         if show_data:
+           print("Display")
            show_sense_data(data)
            show_data = False
-
-        # Reset timer
-        if seconds - delay_display == 1:
-            timestamp = datetime.now()
