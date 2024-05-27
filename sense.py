@@ -93,7 +93,6 @@ while True:
 
     # Trigger display when the joystick is pressed
     if event.action == "pressed":
-        print("Pressed")
         show_data = True
 
     # Every delay seconds
@@ -105,7 +104,6 @@ while True:
 
         # Log data
         if (display_count == delay_log):
-            print("Logging")
             # Reset count
             display_count = 0
             # Write to CSV
@@ -115,6 +113,5 @@ while True:
 
         # Update display when triggered
         if show_data:
-           print("Display")
            show_sense_data(data)
            show_data = False
