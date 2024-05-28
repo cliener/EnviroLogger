@@ -60,7 +60,11 @@ off = (0,0,0)
 scroll = 0.05
 
 # Show all environment data
-def show_sense_data(data):    
+def show_sense_data(data):
+    # clear the screen
+    sense.clear()
+    time.sleep(1)
+
     # temp
     sense.show_message(f"T: {data['temp']:.1f}C", text_colour=blue, back_colour=off, scroll_speed=scroll)
 
@@ -79,7 +83,6 @@ logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG
         csv_log.LOG_FILE_NAME, csv_log.LOG_MAX_SIZE, csv_log.LOG_MAX_FILES, LOG_HEADER)
 
 display_count = 0
-show_data = False
 
 timestamp = time.perf_counter()
 
@@ -93,7 +96,8 @@ while True:
 
     # Trigger display when the joystick is pressed
     if event.action == "pressed":
-        show_data = True
+        show_sense_data(get_sense_data())
+
 
     # Every delay seconds
     if seconds % delay_display == 0:
@@ -110,8 +114,3 @@ while True:
             logger.info(data)
             # Reset timer
             timestamp = time.perf_counter()
-
-        # Update display when triggered
-        if show_data:
-           show_sense_data(data)
-           show_data = False
