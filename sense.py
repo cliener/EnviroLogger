@@ -3,15 +3,11 @@ from datetime import datetime
 import csv_log, logging, time
 
 sense = SenseHat()
-sense.set_rotation(180)
 #sense.color.gain = 60
 #sense.color.integration_cycles = 64
 
-# delay in seconds
-delay_display = 10
-# Display delay x log count multiplier
-# Logs once every delay_log runs of display
-delay_log = 6
+# Delay in seconds
+delay_log = 60
 
 # Compile sense data
 def get_sense_data():
@@ -82,8 +78,6 @@ LOG_HEADER = ['temp', 'pres', 'hum', 'datetime'] # Pass None for no csv header
 logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG_DATE_FORMAT,
         csv_log.LOG_FILE_NAME, csv_log.LOG_MAX_SIZE, csv_log.LOG_MAX_FILES, LOG_HEADER)
 
-display_count = 0
-
 timestamp = time.perf_counter()
 
 while True:
@@ -98,19 +92,13 @@ while True:
     if event.action == "pressed":
         show_sense_data(get_sense_data())
 
-
     # Every delay seconds
-    if seconds % delay_display == 0:
-        data = get_sense_data()
-        # Update count
-        display_count = display_count + 1
-        time.sleep(1)
-
+    if seconds % delay_log == 0:
         # Log data
-        if (display_count == delay_log):
-            # Reset count
-            display_count = 0
-            # Write to CSV
-            logger.info(data)
-            # Reset timer
-            timestamp = time.perf_counter()
+        # fetch data
+        data = get_sense_data()
+        # Write to CSV
+        logger.info(data)
+        # Reset timer
+        timestamp = time.perf_counter()
+        time.sleep(1)
