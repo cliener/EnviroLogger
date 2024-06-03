@@ -1,6 +1,6 @@
 from sense_hat import SenseHat
 from datetime import datetime
-import csv_log, logging, time
+import csv_log, logging, sqlite3, threading, time
 
 sense = SenseHat()
 #sense.color.gain = 60
@@ -70,35 +70,48 @@ def show_sense_data(data):
     # pressure
     sense.show_message(f"P: {data['pres']:.2f} M", text_colour=red, back_colour=off, scroll_speed=scroll)
 
+def log_to_db(data):
+    con = sqlite3.connect("../../piloggerSQLite.db")
+    cur = con.cursor()
+    cur.execute("""
+INSERT INTO envirolog (temperature, humidity, pressure, date)
+VALUES (?, ?, ?, datetime("now"));
+                """, (data['temp'], data['hum'], data['pres'],))
+    con.commit()
+    con.close()
+
+# Separate thread to watch joystick presses
+def joystick_watch():
+    while True:
+        event = sense.stick.wait_for_event(emptybuffer = True)
+
+        # Trigger display when the joystick is pressed
+        if event.action == "pressed":
+            show_sense_data(get_sense_data())
+
+
 # CSV Logger
 # Create logger with csv rotating handler
 LOG_HEADER = ['temp', 'pres', 'hum', 'datetime'] # Pass None for no csv header
+
+# Launch joystick thread
+x = threading.Thread(target=joystick_watch)
+x.start()
 
 # Record and show stats
 logger = csv_log.RotatingCsvLogger(logging.INFO, csv_log.LOG_FORMAT, csv_log.LOG_DATE_FORMAT,
         csv_log.LOG_FILE_NAME, csv_log.LOG_MAX_SIZE, csv_log.LOG_MAX_FILES, LOG_HEADER)
 
-timestamp = time.perf_counter()
-
+# Log data every delay_log seconds
 while True:
-    now = time.perf_counter()
-    time_difference = now - timestamp
-    seconds = int(time_difference)
+    # fetch data
+    data = get_sense_data()
 
-    # Capture joystick event
-    event = sense.stick.wait_for_event(emptybuffer = True)
+    # Write to DB
+    log_to_db(data)
 
-    # Trigger display when the joystick is pressed
-    if event.action == "pressed":
-        show_sense_data(get_sense_data())
+    # Write to CSV
+    logger.info(data)
 
-    # Every delay seconds
-    if seconds % delay_log == 0:
-        # Log data
-        # fetch data
-        data = get_sense_data()
-        # Write to CSV
-        logger.info(data)
-        # Reset timer
-        timestamp = time.perf_counter()
-        time.sleep(1)
+    # Delay
+    time.sleep(delay_log)
